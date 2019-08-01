@@ -1,0 +1,37 @@
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.menu ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-end;
+
+}
+#table{
+    display: flex;
+    justify-content: space-between;
+}
+
+.statement{
+    background-image: url(../Silentelogo3.jpg);
+    background-repeat: no-repeat;
+    background-size: 100px;
+    width: 100%;
+    height: 100%;
+}
+ul .music{
+    background-image: url(../fantasma2.JPG);
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%
+    height: 100%
+
+    align-content: flex-end;
+}
+#text{
+    position: relative;
+    color: white;
+}
