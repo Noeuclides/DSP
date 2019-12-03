@@ -185,7 +185,7 @@ MIDIIn.connectAll;
 
 (
 MIDIdef.cc(\micontrol, {| val, cc, canal|
-	cc.postln;
+	canal.postln;
 	switch(cc)
 	{1} {x.set(\freq, val.linlin(0, 127, 100, 1000));}
 	{2} {x.set(\filtro, val.linlin(0, 127, 300, 1600));}
@@ -195,6 +195,124 @@ MIDIdef.cc(\micontrol, {| val, cc, canal|
 }
 );
 )
+
+
+(
+SynthDef(\simple, { | freq = 220, amp = 0.25, rel = 1 |
+	var sig = SinOsc.ar([freq, freq + 2]) * EnvGen.kr(Env.perc(releaseTime: rel), doneAction: 2);
+	Out.ar(0, sig * amp);
+}).add;
+)
+
+Synth(\simple);
+(
+MIDIdef.noteOn(\synth, { | vel, nota |
+	Synth(\simple, [\freq, nota.midicps, \amp, vel.linlin(0, 127, 0, 1)]);
+
+});
+)
+
+
+MIDIdef.freeAll;
+
+
+
+// Rutinas
+(
+r = Routine({
+	{SinOsc.ar(320)}.scope.yield;
+	127.do{|i| i.linlin(0, 127, 0, 1)}.postln.yield;
+	{ 5.do{|i| i.postln}}.value.yield;
+
+});
+)
+
+r.next;
+
+(
+r = Routine({
+	fork{
+		5.do{|i|
+			"Ejecución %".format(i).postln;
+			1.wait;
+		};
+		"Esperar nueva instrucción".postln;
+	}.yield;
+
+	fork{
+		5.do{|i|
+			"Ejecución %".format(i).postln;
+			0.5.wait;
+		};
+		"Esperar nueva instrucción".postln;
+	}.yield;
+	fork{
+		5.do{|i|
+			"Ejecución %".format(i).postln;
+			0.25.wait;
+		};
+		"FIN...".postln;
+	}
+});
+)
+
+
+r.next;
+
+
+(
+r = Routine({
+	5.do{|i|
+		Synth(\simple, [\freq, (i*2)*200, \rel, 0.5]);
+		1.wait;
+	};
+	0.5.wait;
+
+	5.do{|i|
+		Synth(\simple, [\freq, (i-1)*200, \rel, 0.5]);
+		0.5.wait;
+	};
+	0.5.wait;
+
+	5.do{|i|
+		Synth(\simple, [\freq, (i*1.23)*300, \rel, 0.5]);
+		0.25.wait;
+	};
+}).play;
+)
+
+(
+r = Routine({
+
+	fork{
+		"Secuencia 1".postln;
+		5.do{|i|
+			Synth(\simple, [\freq, (i*2)*200, \rel, 0.5]);
+			1.wait;
+		};
+	};
+	0.5.wait;
+
+	fork{
+		"Secuencia 2".postln;
+		5.do{|i|
+			Synth(\simple, [\freq, (i-1)*200, \rel, 0.5]);
+			0.5.wait;
+		};
+	};
+	0.5.wait;
+
+	fork{
+		"Secuencia 3".postln;
+		5.do{|i|
+			Synth(\simple, [\freq, (i*1.23)*300, \rel, 0.5]);
+			0.25.wait;
+		};
+	}
+}).play;
+)
+
+
 
 
 UGens
